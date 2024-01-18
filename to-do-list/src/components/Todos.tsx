@@ -3,10 +3,11 @@ import TodoItems from "./TodoItems.tsx";
 
 interface NotesListProps {
   notes: Todo[];
-  onRemoveToDo: (id: number) => void
+  onRemoveToDo: (id: number) => void;
+  onEditToDo: (editToDoItem: Todo) => void;
 }
 
-const Todos: React.FC<NotesListProps> = ({ notes, onRemoveToDo }) => {
+const Todos: React.FC<NotesListProps> = ({ notes, onRemoveToDo, onEditToDo }) => {
   return (
     <ul className="grid grid-cols-2 gap-4 mt-4">
       {notes.map((item) => (
@@ -16,6 +17,7 @@ const Todos: React.FC<NotesListProps> = ({ notes, onRemoveToDo }) => {
           title={item.title}
           description={item.description}
           onRemoveToDo={onRemoveToDo}
+          onEditToDo={onEditToDo}
         />
       ))}
     </ul>
