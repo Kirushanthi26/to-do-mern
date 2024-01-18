@@ -1,11 +1,12 @@
 import './App.css'
+import Todos from './components/Todos'
 
 const App = () => {
 
   return (
-    <div>
-      hello world
-    </div>
+    <main>
+      <Todos/>
+    </main>
   )
 }
 
