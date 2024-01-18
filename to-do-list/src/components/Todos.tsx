@@ -1,12 +1,23 @@
+import Todo from "../model/Todo.tsx";
 import TodoItems from "./TodoItems.tsx";
 
-const Todos = () => {
+interface NotesListProps {
+  notes: Todo[];
+  onRemoveToDo: (id: number) => void
+}
+
+const Todos: React.FC<NotesListProps> = ({ notes, onRemoveToDo }) => {
   return (
     <ul className="grid grid-cols-2 gap-4 mt-4">
-      <TodoItems
-        title="finish todo app"
-        description="use react and typescript for developement."
-      />
+      {notes.map((item) => (
+        <TodoItems
+          key={item.id}
+          id={item.id}
+          title={item.title}
+          description={item.description}
+          onRemoveToDo={onRemoveToDo}
+        />
+      ))}
     </ul>
   );
 };
