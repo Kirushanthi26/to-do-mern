@@ -3,6 +3,7 @@ import todoRoutes from "./routes/todos-routes";
 import bodyParser from "body-parser";
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "./models/http-error";
+import mongoose from "mongoose";
 
 const app = express();
 
@@ -15,4 +16,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   throw error;
 });
 
-app.listen(5000);
+mongoose
+  .connect('mongodb://127.0.0.1:27017/todos')
+  .then(() => {
+    app.listen(5000);
+    //console.log("server is running")
+  })
+  .catch((err) => {
+    console.log(err);
+  });

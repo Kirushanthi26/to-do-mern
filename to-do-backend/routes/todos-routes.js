@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const todos_controllers_1 = require("../controllers/todos-controllers");
+const express_validator_1 = require("express-validator");
 const router = (0, express_1.Router)();
-router.get('/', todos_controllers_1.getToDo);
-router.post('/todo', todos_controllers_1.postToDo);
-router.patch('/todo/:todoId', todos_controllers_1.patchToDo);
-router.delete('/todo/:todoId', todos_controllers_1.deleteToDo);
+router.get("/", todos_controllers_1.getToDo);
+router.post("/todo", [(0, express_validator_1.check)("title").not().isEmpty()], todos_controllers_1.postToDo);
+router.patch("/todo/:todoId", [(0, express_validator_1.check)("title").not().isEmpty()], todos_controllers_1.patchToDo);
+router.delete("/todo/:todoId", todos_controllers_1.deleteToDo);
 exports.default = router;

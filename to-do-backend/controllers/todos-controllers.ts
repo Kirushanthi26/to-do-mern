@@ -1,60 +1,111 @@
 import { Request, Response, NextFunction } from "express";
 import { ToDos } from "../models/todos";
 import { HttpError } from "../models/http-error";
+import { validationResult } from "express-validator";
+import ToDoModel from "../models/todo";
 
 let todos: ToDos[] = [
-    {
-        id: '123',
-        title: "complete react project",
-        description:"MERN stack project"
-    }
+  {
+    id: "123",
+    title: "complete react project",
+    description: "MERN stack project",
+  },
 ];
 
-export const getToDo = (req: Request, res: Response, next: NextFunction) => {
-  if (!todos || todos.length === 0) {
+export const getToDo = async (req: Request,res: Response,next: NextFunction) => {
+  let todoList;
+  try {
+    todoList = await ToDoModel.find();
+  } catch (error) {
+    const err = new HttpError(
+      "somthing went wrong, could not find a todo",
+      500
+    );
+    return next(err);
+  }
+
+  if (!todoList || todoList.length === 0) {
     return next(new HttpError("Could not find a To Do Items.", 404));
   }
 
-  res.status(200).json({ todos: todos });
+  res
+    .status(200)
+    .json({ todos: todoList.map((n) => n.toObject({ getters: true })) });
 };
 
-export const postToDo = (req: Request, res: Response, next: NextFunction) => {
-  const newToDo: ToDos = {
-    id: new Date().toISOString(),
-    title: req.body.title,
-    description: req.body.description
-  };
+export const postToDo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return next(new HttpError("invalid input", 422));
+  }
 
-  todos.push(newToDo);
-  res.status(201).json({ message: "added todo", todos: todos });
+  const { title, description } = req.body;
+
+  const newToDo = new ToDoModel({
+    title,
+    description,
+  });
+
+  try {
+    await newToDo.save();
+  } catch (error) {
+    const err = new HttpError("creating todo failed, please try again", 500);
+    return next(err);
+  }
+
+  res.status(201).json({ todos: newToDo });
 };
 
-export const patchToDo = (req: Request, res: Response, next: NextFunction) => {
+export const patchToDo = async (req: Request, res: Response, next: NextFunction) => {
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return next(new HttpError("invalid input", 422));
+  }
+
   const { title, description } = req.body;
   const toDoId = req.params.todoId;
 
-  const toDoIndex = todos.findIndex((n) => n.id === toDoId);
-
-  if (toDoIndex >= 0) {
-    todos[toDoIndex] = {
-      id: todos[toDoIndex].id,
-      title: title,
-      description: description,
-    };
-    return res.status(200).json({ todos: todos });
+  let todoitem;
+  try {
+    todoitem = await ToDoModel.findById(toDoId);
+  } catch (error) {
+    const err = new HttpError("somthing went wrong, could not find a todo",500);
+    return next(err);
   }
 
-  return next(new HttpError("Could not find a To Do Item for this id", 404));
+  todoitem!.title = title;
+  todoitem!.description = description;
+
+  try {
+    await todoitem!.save();
+  } catch (error) {
+    const err = new HttpError("updating todo failed, please try again", 500);
+    return next(err);
+  }
+  return res.status(200).json({ todos: todoitem!.toObject({ getters: true }) });
 };
 
-export const deleteToDo = (req: Request, res: Response, next: NextFunction) => {
+export const deleteToDo = async (req: Request, res: Response, next: NextFunction) => {
   const toDoId = req.params.todoId;
 
-  if (!todos.find((n) => n.id === toDoId)) {
-    return next(new HttpError("could not find a todo for that id", 404));
+  let todoItem;
+  try {
+    todoItem = await ToDoModel.findById(toDoId);
+  } catch (error) {
+    const err = new HttpError("somthing went wrong, could not find a todo",500);
+    return next(err);
   }
 
-  todos = todos.filter((n) => n.id !== toDoId);
+  try {
+    await todoItem!.deleteOne();
+  } catch (error) {
+    const err = new HttpError("deleting todo failed, please try again", 500);
+    return next(err);
+  }
 
-  res.status(200).json({ message: "todo deleted successfully", todos: todos });
+  res.status(200).json({ message: "todo deleted successfully"});
 };
