@@ -1,5 +1,5 @@
 class Todo {
-    id: number;
+    id: string;
     title: string;
     description:string;
 
@@ -7,7 +7,7 @@ class Todo {
     constructor(todoTitle: string, todoDescription:string){
         this.title = todoTitle;
         this.description =todoDescription;
-        this.id = Math.random();
+        this.id = Math.random().toString();
     }
 }
 

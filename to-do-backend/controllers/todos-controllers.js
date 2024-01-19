@@ -16,13 +16,6 @@ exports.deleteToDo = exports.patchToDo = exports.postToDo = exports.getToDo = vo
 const http_error_1 = require("../models/http-error");
 const express_validator_1 = require("express-validator");
 const todo_1 = __importDefault(require("../models/todo"));
-let todos = [
-    {
-        id: "123",
-        title: "complete react project",
-        description: "MERN stack project",
-    },
-];
 const getToDo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let todoList;
     try {

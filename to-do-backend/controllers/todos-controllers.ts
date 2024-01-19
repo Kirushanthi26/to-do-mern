@@ -4,13 +4,6 @@ import { HttpError } from "../models/http-error";
 import { validationResult } from "express-validator";
 import ToDoModel from "../models/todo";
 
-let todos: ToDos[] = [
-  {
-    id: "123",
-    title: "complete react project",
-    description: "MERN stack project",
-  },
-];
 
 export const getToDo = async (req: Request,res: Response,next: NextFunction) => {
   let todoList;

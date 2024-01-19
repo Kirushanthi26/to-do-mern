@@ -3,7 +3,7 @@ import TodoItems from "./TodoItems.tsx";
 
 interface NotesListProps {
   notes: Todo[];
-  onRemoveToDo: (id: number) => void;
+  onRemoveToDo: (id: string) => void;
   onEditToDo: (editToDoItem: Todo) => void;
 }
 
